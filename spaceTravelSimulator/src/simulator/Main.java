@@ -7,6 +7,10 @@ public class Main {
     private static final Scanner scanner = new Scanner(System.in); // Scanner global
     private static final Random random = new Random(); // Generador de números aleatorios
 
+    public static void main(String[] args) {
+        
+    }
+    
     private static boolean randomEvents() throws InterruptedException {
         int randomEvent = random.nextInt(4); // Selección aleatoria del evento
         switch (randomEvent) {
