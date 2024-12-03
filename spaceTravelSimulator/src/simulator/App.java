@@ -1,11 +1,15 @@
 package simulator;
 
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
 
 public class App {
     private static final Scanner scanner = new Scanner(System.in); // Scanner global
     private static final Random random = new Random(); // Generador de números aleatorios
+    private static final int TOTAL_EVENTS = 4; // Total de eventos posibles
+    private static Set<Integer> usedEvents = new HashSet<>();
 
     // Variables globales de recursos
     private static int gas = 1000; // Stock inicial de gasolina
@@ -16,6 +20,7 @@ public class App {
         boolean playAgain = true; // Condición para seguir jugando
 
         while (playAgain) {
+            // Menú principal del juego
             boolean exit = false;
 
             while (!exit) {
@@ -30,30 +35,32 @@ public class App {
                     case 2 -> selectShip();
                     case 3 -> {
                         try {
-                            travelSimulator(); // Inicia la simulación del viaje
+                            travelSimulator(); // Inicia la simulación
                         } catch (InterruptedException e) {
                             System.err.println("Error en la simulación: " + e.getMessage());
                         }
                     }
                     case 4 -> {
                         System.out.println("Saliendo del simulador...");
-                        exit = true; // Termina el ciclo de juego si elige "Salir"
+                        playAgain = false; // Finaliza el programa directamente
+                        exit = true; // Salir del menú principal
                     }
                     default -> System.err.println("Opción no válida. Intente de nuevo.");
                 }
             }
 
-            // Preguntar si desea jugar de nuevo después de completar el juego
-            System.out.println("\n¿Quieres volver a jugar? (1 para sí, 2 para no)");
-            int playAgainOption = scanner.nextInt();
-            scanner.nextLine(); // Limpiar el buffer
+            // Si no se eligió salir (opción 4), preguntar si desea volver a jugar
+            if (playAgain) {
+                System.out.println("\n¿Quieres volver a jugar? (1 para sí, 2 para no)");
+                int playAgainOption = scanner.nextInt();
+                scanner.nextLine(); // Limpia el buffer de entrada
 
-            playAgain = (playAgainOption == 1);
-            if (!playAgain) {
-                System.out.println("Gracias por jugar. ¡Hasta luego!");
+                playAgain = (playAgainOption == 1);
+                if (!playAgain) {
+                    System.out.println("Gracias por jugar. ¡Hasta luego!");
+                }
             }
         }
-
         scanner.close(); // Cierra el Scanner al finalizar el programa
     }
 
@@ -117,22 +124,23 @@ public class App {
             System.out.println("Por favor selecciona un planeta primero.");
             return;
         }
-    
-        int[] gasCost = {200, 500, 800}; // Costos según el planeta
-        int[] oxygenCost = {100, 300, 600};
-    
+
+        int[] gasCost = { 200, 500, 800 }; // Costos según el planeta
+        int[] oxygenCost = { 100, 300, 600 };
+
         // Verificar recursos disponibles antes de iniciar
         while (gas < gasCost[selectedPlanet] || oxygen < oxygenCost[selectedPlanet]) {
             System.out.println("\nNo tienes suficientes recursos para este viaje.");
-            System.out.println("Gasolina necesaria: " + gasCost[selectedPlanet] + ", Oxígeno necesario: " + oxygenCost[selectedPlanet]);
+            System.out.println("Gasolina necesaria: " + gasCost[selectedPlanet] + ", Oxígeno necesario: "
+                    + oxygenCost[selectedPlanet]);
             System.out.println("Tus recursos actuales son:");
             System.out.println("Gasolina: " + gas);
             System.out.println("Oxígeno: " + oxygen);
-    
+
             System.out.println("\n¿Quieres rellenar los recursos? (1 para sí, 2 para no)");
             int refillOption = scanner.nextInt();
             scanner.nextLine(); // Limpiar el buffer
-    
+
             if (refillOption == 1) {
                 refillResources(); // Llama al método para reabastecer
             } else {
@@ -140,15 +148,15 @@ public class App {
                 return;
             }
         }
-    
+
         // Si los recursos son suficientes, continuar con la simulación del viaje
         System.out.println("Iniciando simulación del viaje...");
         boolean interrupted = false;
-    
+
         for (int i = 20; i <= 100; i += 20) {
             System.out.println("Progreso: " + i + "% completado");
             Thread.sleep(1000);
-    
+
             // Posibilidad de un evento aleatorio durante el progreso
             if (Math.random() < 0.5) {
                 boolean eventResolved = randomEvents();
@@ -159,23 +167,31 @@ public class App {
                 }
             }
         }
-    
+
         if (!interrupted) {
             // Mostrar mensaje de éxito
             System.out.println("¡Viaje completado con éxito!");
             gas -= gasCost[selectedPlanet];
             oxygen -= oxygenCost[selectedPlanet];
-    
+
             System.out.println("Recursos restantes:");
             System.out.println("Gasolina: " + gas);
             System.out.println("Oxígeno: " + oxygen);
         }
-    
-        // Pausar brevemente antes de regresar al menú
-        System.out.println("\nPresiona ENTER para volver al menú principal.");
-        scanner.nextLine(); // Espera a que el usuario presione ENTER
+
+        // Preguntar si desea volver a jugar
+        System.out.println("\n¿Quieres volver a jugar? (1 para sí, 2 para no)");
+        int playAgain = scanner.nextInt();
+        scanner.nextLine(); // Limpiar el buffer
+
+        if (playAgain == 1) {
+            System.out.println("\nVolviendo al menú principal...");
+        } else {
+            System.out.println("\nGracias por jugar. ¡Hasta luego!");
+            System.exit(0); // Termina el programa
+        }
     }
-    
+
     public static void refillResources() {
         System.out.println("\nOpciones de reabastecimiento:");
         System.out.println("1. Rellenar gasolina");
@@ -184,7 +200,7 @@ public class App {
         System.out.print("Seleccione una opción: ");
         int option = scanner.nextInt();
         scanner.nextLine(); // Limpiar el buffer
-    
+
         switch (option) {
             case 1 -> {
                 gas += 500; // Aumenta la gasolina en una cantidad fija
@@ -200,24 +216,38 @@ public class App {
                 System.out.println("Recursos aumentados. Ahora tienes:");
                 System.out.println("Gasolina: " + gas);
                 System.out.println("Oxígeno: " + oxygen);
+                pressEnter(scanner);
             }
             default -> System.out.println("Opción no válida. No se realizó ningún reabastecimiento.");
         }
     }
-    
+
     private static boolean randomEvents() throws InterruptedException {
-        int randomEvent = random.nextInt(4); // Selección aleatoria del evento
+        if (usedEvents.size() == TOTAL_EVENTS) {
+            usedEvents.clear(); // Reinicia los eventos si todos ya ocurrieron
+        }
+
+        int randomEvent;
+        do {
+            randomEvent = random.nextInt(TOTAL_EVENTS); // Genera un evento aleatorio
+        } while (usedEvents.contains(randomEvent)); // Reintenta si ya se ejecutó
+
+        usedEvents.add(randomEvent);
         switch (randomEvent) {
             case 0 -> {
+                pressEnter(scanner);
                 return motorOff(scanner, random);
             }
             case 1 -> {
+                pressEnter(scanner);
                 return overload(scanner, random);
             }
             case 2 -> {
+                pressEnter(scanner);
                 return motorFailure(scanner, random);
             }
             case 3 -> {
+                pressEnter(scanner);
                 return asteroidRain(scanner, random);
             }
             default -> {
@@ -334,11 +364,11 @@ public class App {
         System.out.println("|           Alerta!!!           |");
         System.out.println("|     ¡Sobrecarga detectada!    |");
         System.out.println("|-------------------------------|");
-        pressEnter(scanner);
+        pressEnter(scanner); // Pausa inicial
 
         System.out.println("\nApaga los sistemas en este orden:");
         for (int num : sequence) {
-            System.out.print(num + " ");
+            System.out.print(num + " "); // Muestra la secuencia
         }
         System.out.println();
 
@@ -354,11 +384,11 @@ public class App {
             timeRemaining = 9 - (int) elapsedTime; // Actualizar el tiempo restante
 
             if (timeRemaining <= 0) {
-                System.out.println("|---------------------------------|");
-                System.out.println("|       ¡Se acabó el tiempo!      |");
-                System.out.println("|       Sobrecarga mantenida      |");
-                System.out.println("|       ¡La nave explotará!       |");
-                System.out.println("|---------------------------------|");
+                System.out.println("|-------------------------------|");
+                System.out.println("|       ¡Se acabó el tiempo!    |");
+                System.out.println("|       Sobrecarga mantenida    |");
+                System.out.println("|       ¡La nave explotará!     |");
+                System.out.println("|-------------------------------|");
                 return false; // Se acabó el tiempo, falla
             }
 
@@ -366,30 +396,27 @@ public class App {
             System.out.println("    Tienes " + timeRemaining + " segundos   ");
             System.out.println("|-----------------------|");
 
-            // Limpiar el buffer antes de leer la entrada
-            scanner.nextLine(); // Limpiar el buffer antes de tomar la nueva entrada
-
             // Leer la entrada del usuario para el número
             System.out.print("\nIntroduce el número " + (i + 1) + ": ");
-
             while (!scanner.hasNextInt()) { // Verificar que la entrada es un número
                 System.out.println("¡Entrada no válida! Por favor ingresa un número.");
                 scanner.next(); // Descartar la entrada incorrecta
             }
 
-            userResponse[i] = scanner.nextInt(); // Guardar el número
+            userResponse[i] = scanner.nextInt();
+            scanner.nextLine(); // Limpia el buffer tras leer el número
 
             // Verificar si la secuencia es correcta
             if (userResponse[i] != sequence[i]) {
-                System.out.println("|---------------------------------|");
-                System.out.println("|      Error en la secuencia.     |");
-                System.out.println("|       Sobrecarga mantenida      |");
-                System.out.println("|       ¡La nave explotará!       |");
-                System.out.println("|---------------------------------|");
+                System.out.println("|-------------------------------|");
+                System.out.println("|      Error en la secuencia.   |");
+                System.out.println("|       Sobrecarga mantenida    |");
+                System.out.println("|       ¡La nave explotará!     |");
+                System.out.println("|-------------------------------|");
                 return false; // Secuencia incorrecta
             }
 
-            Thread.sleep(1000); // Esperar 1 segundo antes de la siguiente entrada
+            Thread.sleep(500); // Pausa breve antes de la siguiente entrada
         }
 
         // Si todos los números fueron correctos
@@ -541,9 +568,8 @@ public class App {
     }
 
     private static void pressEnter(Scanner scanner) {
-        System.out.print("Presiona ENTER para continuar");
-        if (scanner.hasNextLine()) { // Verifica si hay una línea en el buffer
-            scanner.nextLine(); // Consume esa línea
-        }
+        System.out.print("Presiona ENTER para continuar...");
+        scanner.nextLine(); // Espera directamente al usuario
     }
+
 }
