@@ -1,18 +1,33 @@
-## Getting Started
+# Simulador de Viajes Espaciales 🚀
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+Este proyecto es un simulador interactivo de viajes espaciales escrito en Java. Permite a los jugadores seleccionar planetas, naves espaciales y enfrentarse a diversos eventos aleatorios durante su viaje. El simulador combina elementos educativos y de entretenimiento para ofrecer una experiencia única.
 
-## Folder Structure
+## Características del Proyecto
+- **Selección de destino**: Escoge entre tres planetas con distancias variables.
+- **Selección de nave**: Elige entre varias naves espaciales con diferentes velocidades y capacidades.
+- **Simulación del viaje**: Experimenta el progreso de tu aventura espacial.
+- **Eventos aleatorios**:
+  - **Falla de motor**: Resuelve operaciones matemáticas para arreglar tu nave.
+  - **Sobrecarga**: Memoriza y reproduce una secuencia para estabilizar el sistema.
+  - **Lluvia de meteoritos**: Identifica la capital correcta de un país.
+  - **Adivina el código**: Encuentra un número secreto para reparar el motor.
 
-The workspace contains two folders by default, where:
+## Estructura del Código
+1. **Clase principal (`App`)**:
+   - Contiene el flujo principal del programa y el menú interactivo.
+2. **Métodos principales**:
+   - `showMenu()`: Muestra las opciones disponibles para el jugador.
+   - `selectPlanet()`: Gestiona la selección de planetas.
+   - `selectShip()`: Permite seleccionar una nave espacial.
+   - `travelSimulator()`: Controla el progreso del viaje y los eventos aleatorios.
+   - `randomEvents()`: Ejecuta eventos aleatorios con lógica específica.
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+## Requisitos del Sistema
+- **Java Development Kit (JDK)** versión 11 o superior.
+- Un entorno de desarrollo como IntelliJ IDEA, Eclipse o NetBeans (opcional pero recomendado).
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+## Cómo Ejecutar el Programa
+1. Asegúrate de tener instalado Java en tu sistema.
+2. Compila el archivo fuente utilizando el comando:
+   ```bash
+   javac App.java
